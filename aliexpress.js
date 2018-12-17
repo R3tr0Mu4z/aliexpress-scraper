@@ -5,6 +5,10 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 const puppeteer = require('puppeteer');
 
+router.get('/testing', function(request, response) {
+    response.send('testing');
+});
+
 router.get('/list', function(request, response) {
     var search = request.body.search;
     var pages = request.body.pages;
