@@ -6,6 +6,7 @@ router.use(bodyParser.json());
 const puppeteer = require('puppeteer');
 
 router.get('/testing', function(request, response) {
+    console.log('working');
     response.send('working');
 });
 
