@@ -6,7 +6,7 @@ router.use(bodyParser.json());
 const puppeteer = require('puppeteer');
 
 router.get('/testing', function(request, response) {
-    response.send('testing');
+    response.send('working');
 });
 
 router.get('/list', function(request, response) {
@@ -59,7 +59,7 @@ router.get('/geography', function(request, response) {
 //Gets list of products
 async function getProductList(search_term, pagenumber, ua) {
 try {
-  const browser = await puppeteer.launch({headless : true});
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.setUserAgent(ua);
   await page.goto('https://www.aliexpress.com/', {waitUntil: 'networkidle2'});
@@ -152,7 +152,7 @@ try {
 
 //Gets SKU images
 async function getSKUImages(url,ua) {
-  const browser = await puppeteer.launch({headless : true});
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.setUserAgent(ua);
   await page.goto(url, {waitUntil: 'networkidle2'});
@@ -183,7 +183,7 @@ async function getSKUImages(url,ua) {
 
 //Gets Gallery images
 async function getGalleryImages(url,ua) {
-  const browser = await puppeteer.launch({headless : true});
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.setUserAgent(ua);
   await page.goto(url, {waitUntil: 'networkidle2'});
@@ -215,7 +215,7 @@ async function getGalleryImages(url,ua) {
 
 //Get transactions chart of last 6 months
 async function getTransactionChart(url,ua) {
-  const browser = await puppeteer.launch({headless : true});
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.setRequestInterception(true);
   await blockImages(page);
@@ -275,7 +275,7 @@ async function getTransactionChart(url,ua) {
 
 
 async function getCountryData(url,ua) {
-  const browser = await puppeteer.launch({headless : true});
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.setRequestInterception(true);
   await blockImages(page);
