@@ -186,7 +186,9 @@ async function getSKUImages(url,ua) {
 
 //Gets Gallery images
 async function getGalleryImages(url,ua) {
+  console.log('launching puppeteer');
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  console.log('puppeteer launched');
   const page = await browser.newPage();
   console.log('working');
   await page.setUserAgent(ua);
