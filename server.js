@@ -7,8 +7,12 @@
 var express = require('express');
 var app = express();
 var aliexpress = require('./aliexpress.js');
+const PORT = process.env.PORT
+app.get("/", (req, res) => {
+    res.send("working");
+});
 
 app.use('/aliexpress', aliexpress);
 
-console.log("Running on port 3000");
-app.listen(3000);
+console.log("Running on port "+ PORT);
+app.listen(PORT);
