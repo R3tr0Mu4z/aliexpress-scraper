@@ -175,6 +175,7 @@ async function getSKUImages(url,ua) {
     } catch(e) {
        sku['url'] = 'No data';
     }
+    console.log('new sku');
     skus.push(sku);
   }
   browser.close();
