@@ -32,6 +32,7 @@ router.get('/sku', function(request, response) {
 router.get('/gallery', function(request, response) {
     var url = request.body.url;
     var useragent = request.body.useragent;
+    
     (async () => {
       var result = await getGalleryImages(url, useragent);
       response.send(result);
@@ -187,12 +188,19 @@ async function getSKUImages(url,ua) {
 async function getGalleryImages(url,ua) {
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
+  console.log('working');
   await page.setUserAgent(ua);
+  console.log('working');
   await page.goto(url, {waitUntil: 'networkidle2'});
+  console.log('working');
   await closePopup(page)
+  console.log('working');
   await blockImages(page);
+  console.log('working');
   await page.waitForSelector('.image-thumb-list');
+  console.log('working');
   var gallery_list = await page.$$('.image-thumb-list > li');
+  console.log('working');
   var gallery = [];
   var img = 1;
   for (var li of gallery_list) {
