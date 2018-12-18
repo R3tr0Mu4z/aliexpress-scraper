@@ -154,16 +154,25 @@ try {
 
 //Gets SKU images
 async function getSKUImages(url,ua) {
+  console.log('working');
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
+  console.log('working');
   await page.setUserAgent(ua);
-  await page.goto(url, {waitUntil: 'networkidle2'});
+  console.log('working');
+  await page.goto(url);
+  console.log('working');
   await closePopup(page)
-  await blockImages(page);
+  console.log('working');
+  // await blockImages(page);
+  console.log('working');
   await page.waitForSelector('.sku-attr-list');
+  console.log('working');
   var sku_list = await page.$$('.sku-attr-list > li.item-sku-image');
   var skus = [];
+  console.log('working');
   for (var li of sku_list) {
+    console.log('working');
     var sku = [];
     sku = {};
     sku['product_id'] = url.split('item/')[1].split('/')[1].split('.')[0];
