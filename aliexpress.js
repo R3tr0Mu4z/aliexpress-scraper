@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
+var fse = require('fs-extra');
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 const puppeteer = require('puppeteer');
 
 router.get('/testing', function(request, response) {
-    console.log('working');
-    response.send('working');
+  response.send('working');
 });
 
 router.get('/list', function(request, response) {
@@ -32,7 +32,6 @@ router.get('/sku', function(request, response) {
 router.get('/gallery', function(request, response) {
     var url = request.body.url;
     var useragent = request.body.useragent;
-
     (async () => {
       var result = await getGalleryImages(url, useragent);
       response.send(result);
@@ -42,18 +41,26 @@ router.get('/gallery', function(request, response) {
 router.get('/chart', function(request, response) {
     var url = request.body.url;
     var useragent = request.body.useragent;
+    var filename = url.split('item/')[1].split('/')[1].split('.')[0];
+    filename = filename+'-chart.json';
+    response.write("data will be available in "+ request.protocol + '://' + request.get('host') + "/file?name=" + filename);
+    response.write("\nplease check back within a few mins");
+    response.end();
     (async () => {
-      var result = await getTransactionChart(url, useragent);
-      response.send(result);
+      var result = await getTransactionChart(url, useragent, filename);
     })();
 });
 
 router.get('/geography', function(request, response) {
     var url = request.body.url;
     var useragent = request.body.useragent;
+    var filename = url.split('item/')[1].split('/')[1].split('.')[0];
+    filename = filename+'-geography.json';
+    response.write("data will be available in "+ request.protocol + '://' + request.get('host') + "/file?name=" + filename);
+    response.write("\nplease check back within a few mins");
+    response.end();
     (async () => {
-      var result = await getCountryData(url, useragent);
-      response.send(result);
+      var result = await getCountryData(url, useragent, filename);
     })();
 });
 
@@ -64,18 +71,16 @@ try {
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.setUserAgent(ua);
-  await page.goto('https://www.aliexpress.com/', {waitUntil: 'networkidle2'});
-  await page.waitFor('input[name=SearchText]');
-  await page.$eval('input[name=SearchText]', (el, search_term) => el.value = search_term, search_term);
-  await closePopup(page);
-  await page.click('input[type="submit"]');
+  var page_url = 'https://www.aliexpress.com/wholesale?SearchText='+search_term;
+  await page.goto(page_url);
   await closePopup(page);
   var products = [];
   var i = 1;
   while (i <= pagenumber) {
-    await page.waitForSelector('#hs-below-list-items');
     await autoScroll(page);
-    var list = await page.$$('#hs-below-list-items > li');
+    console.log(cont);
+    await page.waitForSelector('div#hs-list-items');
+    var list = await page.$$('div#hs-list-items ul li');
     for (var li of list) {
       var product = {};
       // console.log(li);
@@ -135,7 +140,6 @@ try {
       }
       var link = await li.$eval('.picRind', e => e.getAttribute('href'));
       product['link'] = link.split('?')[0].replace('//', 'https://');
-      // console.log(product);
       products.push(product);
       }
       try {
@@ -154,25 +158,18 @@ try {
 
 //Gets SKU images
 async function getSKUImages(url,ua) {
-  console.log('working');
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
-  console.log('working');
   await page.setUserAgent(ua);
-  console.log('working');
   await page.goto(url);
-  console.log('working');
   await closePopup(page)
-  console.log('working');
-  // await blockImages(page);
-  console.log('working');
+  await page.setRequestInterception(true);
+  await blockImages(page);
   await page.waitForSelector('.sku-attr-list');
-  console.log('working');
   var sku_list = await page.$$('.sku-attr-list > li.item-sku-image');
   var skus = [];
-  console.log('working');
   for (var li of sku_list) {
-    console.log('working');
+    console.log('working...');
     var sku = [];
     sku = {};
     sku['product_id'] = url.split('item/')[1].split('/')[1].split('.')[0];
@@ -186,7 +183,6 @@ async function getSKUImages(url,ua) {
     } catch(e) {
        sku['url'] = 'No data';
     }
-    console.log('new sku');
     skus.push(sku);
   }
   browser.close();
@@ -195,23 +191,15 @@ async function getSKUImages(url,ua) {
 
 //Gets Gallery images
 async function getGalleryImages(url,ua) {
-  console.log('launching puppeteer');
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
-  console.log('puppeteer launched');
   const page = await browser.newPage();
-  console.log('working');
   await page.setUserAgent(ua);
-  console.log('working');
   await page.goto(url);
-  console.log('working');
   await closePopup(page)
-  console.log('working');
+  await page.setRequestInterception(true);
   await blockImages(page);
-  console.log('working');
   await page.waitForSelector('.image-thumb-list');
-  console.log('working');
   var gallery_list = await page.$$('.image-thumb-list > li');
-  console.log('working');
   var gallery = [];
   var img = 1;
   for (var li of gallery_list) {
@@ -235,13 +223,13 @@ async function getGalleryImages(url,ua) {
 
 
 //Get transactions chart of last 6 months
-async function getTransactionChart(url,ua) {
+async function getTransactionChart(url,ua, filename) {
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.setRequestInterception(true);
   await blockImages(page);
   await page.setUserAgent(ua);
-  await page.goto(url, {waitUntil: 'networkidle2'});
+  await page.goto(url);
   await closePopup(page);
   try {
   await autoScroll(page);
@@ -270,15 +258,19 @@ async function getTransactionChart(url,ua) {
   } else {
       transaction_orders[index]['number']++;
     }
+    // console.log(transaction_orders);
     i++;
   }
   try {
     // console.log('--------------------------------------');
+    console.log('checking for next page');
     await page.waitForSelector('.ui-pagination-next');
     await page.click('.ui-pagination-next');
+    console.log('delaying');
     await delay(4000);
     // console.log(transaction_orders);
     try {
+      console.log('checking for next page');
       await page.waitForSelector('span.ui-pagination-next.ui-pagination-disabled', {timeout : 50});
       // console.log('found disabled');
       n++;
@@ -291,11 +283,18 @@ async function getTransactionChart(url,ua) {
   }
 }
     browser.close();
-    return transaction_orders;
+    var json = JSON.stringify(transaction_orders);
+    fse.outputFile('files/'+filename, json, err => {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log('The file was saved!');
+    }
+  })
 }
 
 
-async function getCountryData(url,ua) {
+async function getCountryData(url,ua, filename) {
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.setRequestInterception(true);
@@ -352,6 +351,14 @@ async function getCountryData(url,ua) {
     n = 1;
   }
 }
+    var json = JSON.stringify(countries);
+    fse.outputFile('files/'+filename, json, err => {
+      if(err) {
+        console.log(err);
+      } else {
+        console.log('The file was saved!');
+      }
+    })
     browser.close();
     return countries;
 }
@@ -361,6 +368,7 @@ async function getCountryData(url,ua) {
 async function autoScroll(page){
     await page.evaluate(async () => {
         await new Promise((resolve, reject) => {
+            console.log('scrolling...');
             var totalHeight = 0;
             var distance = 100;
             var timer = setInterval(() => {
