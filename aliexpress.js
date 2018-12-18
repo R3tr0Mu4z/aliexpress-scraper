@@ -32,7 +32,7 @@ router.get('/sku', function(request, response) {
 router.get('/gallery', function(request, response) {
     var url = request.body.url;
     var useragent = request.body.useragent;
-    
+
     (async () => {
       var result = await getGalleryImages(url, useragent);
       response.send(result);
@@ -193,7 +193,7 @@ async function getGalleryImages(url,ua) {
   console.log('working');
   await page.setUserAgent(ua);
   console.log('working');
-  await page.goto(url, {waitUntil: 'networkidle2'});
+  await page.goto(url);
   console.log('working');
   await closePopup(page)
   console.log('working');
