@@ -1,5 +1,8 @@
 {
   "name": "server",
+  "engines": {
+    "node": "8.2.1"
+  },
   "version": "1.0.0",
   "description": "Aliexpress research tool",
   "main": "server.js",
@@ -9,14 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "ali-express-research"
+    "url": "https://github.com/R3tr0Mu4z/aliexpress-research-tool-server.git"
   },
   "author": "Syed Muaz Ali",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "express": "^4.16.4",
+    "express": "^4.16.2",
     "nodemon": "^1.18.9",
-    "puppeteer": "^1.11.0"
+    "puppeteer": "^0.12.0",
+    "valid-url": "^1.0.9"
   }
 }
