@@ -7,7 +7,7 @@
 var express = require('express');
 var app = express();
 var aliexpress = require('./aliexpress.js');
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 8080;
 app.get("/", (req, res) => {
     res.send("working");
 });
