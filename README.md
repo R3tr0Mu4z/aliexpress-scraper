@@ -520,6 +520,6 @@ Send get request to /aliexpress/list
 	"pages": number,
 	"useragent": String
 }
-```J
+```
 
 
