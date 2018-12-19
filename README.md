@@ -1,5 +1,5 @@
 # Aliexpress Research Tool (Server)
-Tool to download Aliexpress product's gallery images, SKU images, history of last 6 months (order and countries) and scrape search result. 
+Tool to scrape Aliexpress product's gallery images, SKU images, history of last 6 months (order and countries) and search result. 
 
 ### Technologies used  : Node JS, Puppeteer JS, Express JS.
 
