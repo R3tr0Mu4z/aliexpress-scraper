@@ -297,8 +297,8 @@ Send a GET request with JSON object to https://YOUR-HOST/aliexpress/chart
 data will be available in http://serverbetav2.herokuapp.com/file?name=32955235363-geography.json
 please check back within a few mins
 ```
-```JSON
 #### 32955235363-geography.json
+```JSON
 [
     {
         "product_id": "32955235363",
